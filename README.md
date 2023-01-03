@@ -8,5 +8,5 @@ Run tests through `./run_tests.sh`, which'll print out the results of aoc inputs
 
 - [x] Day 1
 - [x] Day 2
-- [ ] Day 3
+- [x] Day 3
 - [x] Day 4
