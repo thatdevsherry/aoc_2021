@@ -12,34 +12,29 @@ class LifeSupportRating(Enum):
 def process_input(input_array: np.ndarray, reading_type: Literal["OXYGEN", "CO2"]) -> int:
     _, number_of_columns = input_array.shape
     array_to_narrow = input_array
+    value_to_find_in_array = []
 
-    for column in range(number_of_columns):
-        column_values = input_array[:, column]
-        if reading_type == LifeSupportRating.OXYGEN.value:
-            frequency_digit: int = np.argmax(np.bincount(column_values))
-        else:
-            frequency_digit: int = np.argmin(np.bincount(column_values))
-
+    for col in range(number_of_columns):
         if len(array_to_narrow) == 1:
+            value_to_find_in_array = array_to_narrow[0]
             break
 
-        if len(array_to_narrow) == 2:
-            if reading_type == LifeSupportRating.OXYGEN.value:
-                if array_to_narrow[array_to_narrow[:, column] == 1].size > 0:
-                    array_to_narrow = array_to_narrow[array_to_narrow[:,
-                                                                      column] == 1]
-            else:
-                if array_to_narrow[array_to_narrow[:, column] == 0].size > 0:
-                    array_to_narrow = array_to_narrow[array_to_narrow[:,
-                                                                      column] == 0]
-
-        if len(array_to_narrow[array_to_narrow[:, column] == frequency_digit]) != 0:
-            array_to_narrow = array_to_narrow[array_to_narrow[:,
-                                                              column] == frequency_digit]
+        column_values = array_to_narrow[:, col]
+        result = np.bincount(column_values)
+        if reading_type == LifeSupportRating.OXYGEN.value:
+            highest_frequency_number = np.argmax(
+                result) if result[0] != result[1] else 1
+            array_to_narrow = array_to_narrow[np.where(
+                array_to_narrow[:, col] == highest_frequency_number)]
+            value_to_find_in_array.append(highest_frequency_number)
         else:
-            continue
+            lowest_frequency_number = np.argmin(
+                result) if result[0] != result[1] else 0
+            array_to_narrow = array_to_narrow[np.where(
+                array_to_narrow[:, col] == lowest_frequency_number)]
+            value_to_find_in_array.append(lowest_frequency_number)
 
-    return array_to_narrow[0]
+    return int(''.join(map(str, value_to_find_in_array)), 2)
 
 
 def run_part_2(input: TextIOWrapper):
@@ -51,12 +46,9 @@ def run_part_2(input: TextIOWrapper):
         normal_list.append(list(line))
 
     input_array_cleansed = np.array(normal_list).astype(np.int8)
+
     oxygen_generator_rating = process_input(
         input_array_cleansed, LifeSupportRating.OXYGEN.value)
     co2_scrubber_rating = process_input(
         input_array_cleansed, LifeSupportRating.CO2.value)
-    oxygen_generator_rating_as_decimal = int(
-        ''.join(map(str, oxygen_generator_rating)), 2)
-    co2_scrubber_rating_as_decimal = int(
-        ''.join(map(str, co2_scrubber_rating)), 2)
-    return oxygen_generator_rating_as_decimal * co2_scrubber_rating_as_decimal
+    return oxygen_generator_rating * co2_scrubber_rating

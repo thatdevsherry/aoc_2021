@@ -1,5 +1,4 @@
 from .part_2 import run_part_2
-import pytest
 
 
 def test_example_part_2():
