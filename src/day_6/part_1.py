@@ -53,7 +53,7 @@ class LanternfishSimulator:
                 self.all_fish.append(Lanternfish(8))
 
 
-def run_part_1(input: TextIOWrapper, days: int) -> None:
+def run_part_1(input: TextIOWrapper, days: int) -> int:
     input_cleansed = list(map(int, input.read().strip("\n").split(",")))
     lanternfish_simulator = LanternfishSimulator(input_cleansed)
     lanternfish_simulator.run_simulation_for_days(days)
