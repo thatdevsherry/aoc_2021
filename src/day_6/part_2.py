@@ -19,14 +19,11 @@ def run_part_2(input: TextIOWrapper, days: int) -> int:
 
     # initial setup
     lanternfish_school = np.array(input_cleansed)
-    print(lanternfish_school)
     dd = defaultdict(int)
     for i in range(9):
         dd[i] = 0
-    print(dd)
     for i in lanternfish_school:
         dd[i] += 1
-    print(dd)
 
     # start work
     for _ in range(days):
