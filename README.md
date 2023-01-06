@@ -11,3 +11,4 @@ Run tests through `./run_tests.sh`, which'll print out the results of aoc inputs
 - [x] Day 3
 - [x] Day 4
 - [x] Day 5
+- [ ] Day 6 (part 2 incomplete)
