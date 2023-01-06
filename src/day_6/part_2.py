@@ -12,27 +12,40 @@ Will have to figure out a better way.
 """
 from io import TextIOWrapper
 import numpy as np
+from collections import defaultdict
 
 
-def run_stuff(lanternfish_school):
-    lanternfish_school = np.array([lanternfish_school])
-    # check for 0s, and store their indices
-    zeros_on_current_day = lanternfish_school == 0
-    # decrement all values not currently 0
-    lanternfish_school[lanternfish_school != 0] -= 1
-    # replace zeros (from first step) with 6
-    lanternfish_school[np.where(zeros_on_current_day)[0]] = 6
-    # for each 0 from step 1, add a new value 8
-    lanternfish_school = np.append(lanternfish_school, np.repeat(
-        8, np.where(zeros_on_current_day)[0].size))
+def run_stuff(lanternfish_school, days: int):
+    for _ in range(0, days):
+        lanternfish_school = np.array([lanternfish_school])
+        # check for 0s, and store their indices
+        zeros_on_current_day = lanternfish_school == 0
+        # decrement all values not currently 0
+        lanternfish_school[lanternfish_school != 0] -= 1
+        # replace zeros (from first step) with 6
+        lanternfish_school[np.where(zeros_on_current_day)] = 6
+        # for each 0 from step 1, add a new value 8
+        lanternfish_school = np.append(lanternfish_school, np.repeat(
+            8, np.where(zeros_on_current_day)[0].size))
     return lanternfish_school
 
 
 def run_part_2(input: TextIOWrapper, days: int) -> int:
     input_cleansed = list(map(int, input.read().strip("\n").split(",")))
     lanternfish_school = np.array(input_cleansed)
+    unique_fish = np.unique(lanternfish_school, return_counts=True)
+    computation_dict = defaultdict(int)
+    for i in unique_fish[0]:
+        computation_dict[i] = i
 
-    for _ in range(0, days):
-        lanternfish_school = np.concatenate(
-            list(map(run_stuff, lanternfish_school)))
-    return lanternfish_school.size
+    for i in unique_fish[0]:
+        output = run_stuff(computation_dict[i], days)
+        computation_dict[i] = output
+
+    sum = 0
+
+    freqs_dict = dict(zip(unique_fish[0], unique_fish[1]))
+    for k, v in computation_dict.items():
+        sum += v.size * freqs_dict[k]
+
+    return sum
