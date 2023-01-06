@@ -1,5 +1,4 @@
 from .part_2 import run_part_2
-import pytest
 
 
 def test_example_part_2_after_256_days():
@@ -9,7 +8,6 @@ def test_example_part_2_after_256_days():
     assert output == 26984457539
 
 
-@pytest.mark.skip
 def test_part_2():
     output: int | None = None
     with open("./inputs/day_6/aoc_input.txt") as aoc_input_file:

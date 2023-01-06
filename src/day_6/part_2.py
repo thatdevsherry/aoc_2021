@@ -1,51 +1,41 @@
 """
-So yeah, Python data models were nice for part 1, but part 2 became
-computationally expensive, and the time to run the test for 256 days was taking
-so long I had to exit out.
+I couldn't figure this out, started engineering it wayyy too much.
 
-Let's solve this part using numpy array.
+Turns out it was supposed to be super simple by using the right data structure
+and flow.
 
-My first iteration is super bad, the fish increase exponentially so the code
-still is really, really slow. I don't think it even outputs the answer :P
+Copied over code from theprimagen's video. Well I couldn't solve this on my
+own... but at least I learned to try thinking differently :)
 
-Will have to figure out a better way.
+Vid ref: https://youtu.be/__gDZny1uwY
 """
 from io import TextIOWrapper
 import numpy as np
 from collections import defaultdict
 
 
-def run_stuff(lanternfish_school, days: int):
-    for _ in range(0, days):
-        lanternfish_school = np.array([lanternfish_school])
-        # check for 0s, and store their indices
-        zeros_on_current_day = lanternfish_school == 0
-        # decrement all values not currently 0
-        lanternfish_school[lanternfish_school != 0] -= 1
-        # replace zeros (from first step) with 6
-        lanternfish_school[np.where(zeros_on_current_day)] = 6
-        # for each 0 from step 1, add a new value 8
-        lanternfish_school = np.append(lanternfish_school, np.repeat(
-            8, np.where(zeros_on_current_day)[0].size))
-    return lanternfish_school
-
-
 def run_part_2(input: TextIOWrapper, days: int) -> int:
     input_cleansed = list(map(int, input.read().strip("\n").split(",")))
+
+    # initial setup
     lanternfish_school = np.array(input_cleansed)
-    unique_fish = np.unique(lanternfish_school, return_counts=True)
-    computation_dict = defaultdict(int)
-    for i in unique_fish[0]:
-        computation_dict[i] = i
+    print(lanternfish_school)
+    dd = defaultdict(int)
+    for i in range(9):
+        dd[i] = 0
+    print(dd)
+    for i in lanternfish_school:
+        dd[i] += 1
+    print(dd)
 
-    for i in unique_fish[0]:
-        output = run_stuff(computation_dict[i], days)
-        computation_dict[i] = output
+    # start work
+    for _ in range(days):
+        fish_at_zero = dd[0]
+        dd[0] = 0
+        for i in range(1, 10):
+            dd[i - 1] += dd[i]
+            dd[i] = 0
+        dd[8] = fish_at_zero
+        dd[6] += fish_at_zero
 
-    sum = 0
-
-    freqs_dict = dict(zip(unique_fish[0], unique_fish[1]))
-    for k, v in computation_dict.items():
-        sum += v.size * freqs_dict[k]
-
-    return sum
+    return np.sum(np.array(list(dd.values())))
